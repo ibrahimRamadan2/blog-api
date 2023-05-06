@@ -1,4 +1,5 @@
 class CommentController < ApplicationController
+    before_action :authorize_request
     
     def list   # should list all comments for an article
         @article = Article.find(params[:comment][:article_id])
@@ -6,8 +7,7 @@ class CommentController < ApplicationController
     end
     
     def create
-        @article = Article.find(params[:comment][:article_id])
-        @comments = @article.comments.create!(comment_params)
+        @comment = @article.comments.create!(comment_params)
         render json: {comment: @comment} , status: :created
     end
 
@@ -25,7 +25,7 @@ class CommentController < ApplicationController
 
     private
     def comment_params
-        params.require(:comment).permit(:article_id, :description)
+        params.require(:comment).permit(:article_id, :description , :user_id)
     end
 
 end

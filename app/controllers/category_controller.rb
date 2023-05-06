@@ -1,8 +1,10 @@
 class CategoryController < ApplicationController
+    before_action :authorize_request
+
     def list 
         render json: {"categories": Category.all}
     end
-
+    
     def show
         @category = Category.find(params[:id])
         render json: {"category": @category}

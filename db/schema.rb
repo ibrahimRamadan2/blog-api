@@ -10,12 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_25_104528) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_30_154122) do
   create_table "articles", force: :cascade do |t|
     t.string "title"
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_articles_on_user_id"
   end
 
   create_table "articles_categories", id: false, force: :cascade do |t|
@@ -30,16 +32,30 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_25_104528) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "categories_users", id: false, force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "category_id", null: false
+    t.index ["user_id", "category_id"], name: "index_categories_users_on_user_id_and_category_id"
+  end
+
   create_table "comments", force: :cascade do |t|
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "article_id", null: false
+    t.integer "user_id", null: false
+    t.index ["article_id"], name: "index_comments_on_article_id"
+    t.index ["user_id"], name: "index_comments_on_user_id"
   end
 
   create_table "nest_comments", force: :cascade do |t|
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.integer "comment_id", null: false
+    t.index ["comment_id"], name: "index_nest_comments_on_comment_id"
+    t.index ["user_id"], name: "index_nest_comments_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -48,6 +64,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_25_104528) do
     t.boolean "is_activated"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "password_digest"
+    t.boolean "is_deleted"
+    t.string "email"
+    t.text "bio"
   end
 
+  add_foreign_key "articles", "users"
+  add_foreign_key "comments", "articles"
+  add_foreign_key "comments", "users"
+  add_foreign_key "nest_comments", "comments"
+  add_foreign_key "nest_comments", "users"
 end
